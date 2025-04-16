@@ -17,11 +17,11 @@ public:
         RCLCPP_INFO(this->get_logger(), "RTK Node has been started.");
 
         // Declare parameters
-        this->declare_parameter<std::string>("caster", "nrtk.big.go.id");
-        this->declare_parameter<std::string>("port", "2101");
-        this->declare_parameter<std::string>("mount_point", "Nearest-rtcm3");
-        this->declare_parameter<std::string>("username", "heruka");
-        this->declare_parameter<std::string>("password", "HERU");
+        this->declare_parameter<std::string>("caster", get_env("RTK_CASTER"));
+        this->declare_parameter<std::string>("port", get_env("NTRIP_PORT"));
+        this->declare_parameter<std::string>("mount_point", get_env("NTRIP_MOUNTPOINT"));
+        this->declare_parameter<std::string>("username", get_env("NTRIP_USERNAME"));
+        this->declare_parameter<std::string>("password", get_env("NTRIP_PASSWORD"));
 
         // Get parameters
         this->get_parameter("caster", caster_);
@@ -60,6 +60,12 @@ private:
     // Parameters
     std::string caster_, port_, mount_point_, username_, password_;
     bool is_connected_;
+
+    std::string get_env(const std::string &key)
+    {
+        const char *value = std::getenv(key.c_str());
+        return value ? std::string(value) : "";
+    }
 
     std::string base64_encode(const std::string &in)
     {
